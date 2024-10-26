@@ -1,0 +1,13 @@
+sudo docker pull postgres:17.0-alpine3.20                                                                                          [pull image from web]                
+sudo docker images                                                                                                                 [list image from local]               
+sudo docker ps                                                                                                                     [list container from local]
+sudo docker stop d2e813a2521c                                                                                                      [stop runing container from local]    
+sudo docker rm d2e813a2521c                                                                                                        [remove runing container from local]
+sudo docker rmi f0dfc903a663                                                                                                       [remove runing image from local]    
+sudo docker run --name postgres17 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -d postgres:17.0-alpine3.20     [run postgres container]
+sudo docker exec -it 5ab276d26059 psql -U root                                                                                     [interact with runing container]
+sudo docker logs 5ab276d26059                                                                                                      [check log of runing container]
+sudo docker exec -it postgres17 /bin/sh                                                                                            [open terminal and access the containers command]
+
+
+migrate create -ext sql -dir db/migration -seq init_schema                                                                         [create migration script]
