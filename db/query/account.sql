@@ -25,3 +25,8 @@ FOR NO KEY UPDATE;
 -- name: ListAccounts :many
 SELECT * FROM accounts
 ORDER BY owner;
+
+-- name: ListAccountsWithPagination :many
+SELECT * FROM accounts
+ORDER BY created_at desc
+OFFSET $1 LIMIT $2;

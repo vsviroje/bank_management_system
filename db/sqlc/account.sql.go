@@ -77,7 +77,47 @@ func (q *Queries) ListAccounts(ctx context.Context) ([]Account, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Account
+	items := []Account{}
+	for rows.Next() {
+		var i Account
+		if err := rows.Scan(
+			&i.ID,
+			&i.Owner,
+			&i.Balance,
+			&i.Currency,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAccountsWithPagination = `-- name: ListAccountsWithPagination :many
+SELECT id, owner, balance, currency, created_at FROM accounts
+ORDER BY created_at desc
+OFFSET $1 LIMIT $2
+`
+
+type ListAccountsWithPaginationParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+func (q *Queries) ListAccountsWithPagination(ctx context.Context, arg ListAccountsWithPaginationParams) ([]Account, error) {
+	rows, err := q.db.QueryContext(ctx, listAccountsWithPagination, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Account{}
 	for rows.Next() {
 		var i Account
 		if err := rows.Scan(
